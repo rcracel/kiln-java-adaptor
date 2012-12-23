@@ -26,11 +26,13 @@ public class KilnPublisher {
     private String serverUrl;
     private String applicationName;
     private String environmentName;
+    private String apiKey;
 
-    public KilnPublisher(String serverUrl, String applicationName, String environmentName) {
+    public KilnPublisher(String serverUrl, String apiKey, String applicationName, String environmentName) {
         this.serverUrl = serverUrl;
         this.applicationName = applicationName;
         this.environmentName = environmentName;
+        this.apiKey = apiKey;
     }
 
     public void pushItems( List<LoggingEvent> events ) {
@@ -128,7 +130,7 @@ public class KilnPublisher {
             items.add( me.toString() );
         }
 
-        String response = String.format("{ \"events\": [%s] }", StringUtils.join(items.toArray(), ",") );
+        String response = String.format("{ \"api-key\": \"%s\", \"events\": [%s] }", apiKey, StringUtils.join(items.toArray(), ",") );
 
         //System.out.println( response );
 

@@ -7,7 +7,7 @@
 
     <groupId>com.nevermindsoft</groupId>
     <artifactId>kiln-adaptor-java</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
 
     <name>KILN Log4j Adaptor</name>
     <description>Adaptor for the KILN logging service</description>

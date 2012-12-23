@@ -13,6 +13,7 @@ public class RemoteServiceAppender extends AppenderSkeleton {
 
     private String applicationName = "Unknown";
     private String environmentName = "Unknown";
+    private String apiKey          = "xxx-xxx-xxx";
     private String serverUrl       = "http://localhost:8080/polar/api/submit";
     private int    maxRequestItems = 200;
     private int    sleepTime       = 2000;
@@ -23,7 +24,7 @@ public class RemoteServiceAppender extends AppenderSkeleton {
 
     @Override
     public void activateOptions() {
-        processor = new PublisherThread( applicationName, environmentName, serverUrl, maxRequestItems, sleepTime );
+        processor = new PublisherThread( applicationName, apiKey, environmentName, serverUrl, maxRequestItems, sleepTime );
 
         thread = new Thread( processor );
 
@@ -104,5 +105,9 @@ public class RemoteServiceAppender extends AppenderSkeleton {
 
     public void setEnvironmentName( String environmentName ) {
         this.environmentName = environmentName;
+    }
+
+    public void setApiKey( String apiKey ) {
+        this.apiKey = apiKey;
     }
 }

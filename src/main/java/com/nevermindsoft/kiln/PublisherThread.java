@@ -17,6 +17,8 @@ public class PublisherThread implements Runnable {
 
     private String applicationName;
 
+    private String apiKey;
+
     private String environmentName;
 
     private String serverUrl;
@@ -29,17 +31,19 @@ public class PublisherThread implements Runnable {
      * Constructor for the publisher thread.
      *
      * @param applicationName
+     * @param apiKey
      * @param environmentName
      * @param serverUrl
      * @param maxItems
      * @param sleepTime
      */
-    public PublisherThread(String applicationName, String environmentName, String serverUrl, int maxItems, int sleepTime) {
+    public PublisherThread(String applicationName, String apiKey, String environmentName, String serverUrl, int maxItems, int sleepTime) {
         this.applicationName = applicationName;
         this.environmentName = environmentName;
         this.serverUrl = serverUrl;
         this.maxItems = maxItems;
         this.sleepTime = sleepTime;
+        this.apiKey = apiKey;
     }
 
     public boolean queue( LoggingEvent event ) {
@@ -84,16 +88,20 @@ public class PublisherThread implements Runnable {
     }
 
     /**
+     * Pushes a collection of events to the server
      *
      * @param events the collection of LoggingEvent to serialize to the log server
      */
     private void pushItems( List<LoggingEvent> events ) {
-        new KilnPublisher( serverUrl, applicationName, environmentName ).pushItems( events );
+        new KilnPublisher( serverUrl, apiKey, applicationName, environmentName ).pushItems( events );
     }
 
+    /**
+     * Forces all pending messages to be sent to the server
+     */
     public void flush() {
         List<LoggingEvent> localQueue = new ArrayList<LoggingEvent>();
-        KilnPublisher publisher = new KilnPublisher( serverUrl, applicationName, environmentName );
+        KilnPublisher publisher = new KilnPublisher( serverUrl, apiKey, applicationName, environmentName );
 
         while ( !eventQueue.isEmpty() ) {
             LoggingEvent event = eventQueue.poll();
