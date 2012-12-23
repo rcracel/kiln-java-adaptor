@@ -18,3 +18,4 @@ gen/
 # Maven binary files
 */target/*
 */target/**
+target
