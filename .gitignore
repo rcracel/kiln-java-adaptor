@@ -1,0 +1,20 @@
+# Intellij project files
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Eclipse project files
+.classpath
+.project
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+
+# Maven binary files
+*/target/*
+*/target/**

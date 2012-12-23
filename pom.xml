@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.nevermindsoft</groupId>
+    <artifactId>kiln-adaptor-java</artifactId>
+    <version>1.0</version>
+
+    <name>KILN Log4j Adaptor</name>
+    <description>Adaptor for the KILN logging service</description>
+    <url>https://github.com/rcracel/kiln-java-adaptor</url>
+
+    <packaging>jar</packaging>
+
+    <scm>
+        <url>https://github.com/rcracel/kiln-java-adaptor</url>
+        <connection>https://github.com/rcracel/kiln-java-adaptor.git</connection>
+        <developerConnection>https://github.com/rcracel/kiln-java-adaptor.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>rcracel</id>
+            <name>Roger Cracel</name>
+            <email>rcracel@nevermindsoft.com</email>
+            <url>https://github.com/rcracel</url>
+            <organization>Nevermind Soft</organization>
+            <organizationUrl>http://www.nevermindsoft.com/</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>-6</timezone>
+            <properties>
+                <picUrl>http://tinyurl.com/prv4t</picUrl>
+            </properties>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+    
+</project>
