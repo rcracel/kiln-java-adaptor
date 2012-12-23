@@ -24,13 +24,13 @@ import java.util.List;
 public class KilnPublisher {
 
     private String serverUrl;
-    private String applicationName;
+    private String moduleName;
     private String environmentName;
     private String apiKey;
 
-    public KilnPublisher(String serverUrl, String apiKey, String applicationName, String environmentName) {
+    public KilnPublisher(String serverUrl, String apiKey, String moduleName, String environmentName) {
         this.serverUrl = serverUrl;
-        this.applicationName = applicationName;
+        this.moduleName = moduleName;
         this.environmentName = environmentName;
         this.apiKey = apiKey;
     }
@@ -117,7 +117,7 @@ public class KilnPublisher {
 
             me.append("{");
 
-            me.append("\"application_name\":\"").append(escapeJSON(applicationName)).append("\",");
+            me.append("\"module_name\":\"").append(escapeJSON(moduleName)).append("\",");
             me.append("\"log_level\":\"")       .append(escapeJSON(event.getLevel().toString())).append("\",");
             me.append("\"message\":\"")         .append(escapeJSON(event.getRenderedMessage())).append("\",");
             me.append("\"timestamp\":\"")       .append(escapeJSON(dateFormatter.format(new Date(event.getTimeStamp())))).append("\",");

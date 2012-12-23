@@ -15,7 +15,7 @@ public class PublisherThread implements Runnable {
 
     private boolean shouldRun = true;
 
-    private String applicationName;
+    private String moduleName;
 
     private String apiKey;
 
@@ -30,15 +30,15 @@ public class PublisherThread implements Runnable {
     /**
      * Constructor for the publisher thread.
      *
-     * @param applicationName
+     * @param moduleName
      * @param apiKey
      * @param environmentName
      * @param serverUrl
      * @param maxItems
      * @param sleepTime
      */
-    public PublisherThread(String applicationName, String apiKey, String environmentName, String serverUrl, int maxItems, int sleepTime) {
-        this.applicationName = applicationName;
+    public PublisherThread(String moduleName, String apiKey, String environmentName, String serverUrl, int maxItems, int sleepTime) {
+        this.moduleName = moduleName;
         this.environmentName = environmentName;
         this.serverUrl = serverUrl;
         this.maxItems = maxItems;
@@ -93,7 +93,7 @@ public class PublisherThread implements Runnable {
      * @param events the collection of LoggingEvent to serialize to the log server
      */
     private void pushItems( List<LoggingEvent> events ) {
-        new KilnPublisher( serverUrl, apiKey, applicationName, environmentName ).pushItems( events );
+        new KilnPublisher( serverUrl, apiKey, moduleName, environmentName ).pushItems( events );
     }
 
     /**
@@ -101,7 +101,7 @@ public class PublisherThread implements Runnable {
      */
     public void flush() {
         List<LoggingEvent> localQueue = new ArrayList<LoggingEvent>();
-        KilnPublisher publisher = new KilnPublisher( serverUrl, apiKey, applicationName, environmentName );
+        KilnPublisher publisher = new KilnPublisher( serverUrl, apiKey, moduleName, environmentName );
 
         while ( !eventQueue.isEmpty() ) {
             LoggingEvent event = eventQueue.poll();
