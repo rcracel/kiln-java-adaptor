@@ -17,8 +17,8 @@
 
     <scm>
         <url>https://github.com/rcracel/kiln-java-adaptor</url>
-        <connection>https://github.com/rcracel/kiln-java-adaptor.git</connection>
-        <developerConnection>https://github.com/rcracel/kiln-java-adaptor.git</developerConnection>
+        <connection>scm:git:git@github.com:rcracel/kiln-java-adaptor.git</connection>
+        <developerConnection>scm:git:git@github.com:rcracel/kiln-java-adaptor.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -111,5 +111,12 @@
         </plugins>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Nexus Staging Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
 </project>
