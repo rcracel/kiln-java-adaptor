@@ -39,7 +39,7 @@ public class KilnPublisher {
         HttpURLConnection connection = null;
 
         try {
-            String parameters = buildAjax( events );
+            String ajaxRequest = buildAjax( events );
             URL url = new URL( serverUrl );
 
             //System.out.println("**** Pushing " + parameters);
@@ -51,7 +51,7 @@ public class KilnPublisher {
 
             connection.setRequestProperty( "Content-Type", "application/json");
             connection.setRequestProperty( "Accept", "application/json");
-            connection.setRequestProperty( "Content-Length", String.valueOf( Integer.toString( parameters.getBytes().length ) ) );
+            connection.setRequestProperty( "Content-Length", String.valueOf( Integer.toString( ajaxRequest.getBytes().length ) ) );
             connection.setRequestProperty( "Content-Language", "en-US");
 
             //connection.setDoInput(true);
@@ -60,12 +60,13 @@ public class KilnPublisher {
 
             //Send request
             DataOutputStream wr = new DataOutputStream ( connection.getOutputStream() );
-            wr.writeBytes( parameters );
+            wr.writeBytes( ajaxRequest );
             wr.flush ();
             wr.close ();
 
             if ( connection.getResponseCode() != HttpURLConnection.HTTP_OK ) {
-                System.out.println("Response code: " + connection.getResponseCode());
+                System.out.println(" -- Request: " + ajaxRequest);
+                System.out.println(" -- Response code: " + connection.getResponseCode());
 
                 //Get Response
                 InputStream is = connection.getInputStream();
@@ -81,7 +82,7 @@ public class KilnPublisher {
                 System.out.println( response.toString() );
             }
 
-            //System.out.println("**** Pushing done with code " + connection.getResponseCode() + " - " + connection.getResponseMessage());
+//            System.out.println("**** Pushing done with code " + connection.getResponseCode() + " - " + connection.getResponseMessage());
 
         } catch ( MalformedURLException e ) {
             System.out.println("Could not connect to the server: " + e.getMessage());
@@ -130,7 +131,7 @@ public class KilnPublisher {
             items.add( me.toString() );
         }
 
-        String response = String.format("{ \"api-key\": \"%s\", \"events\": [%s] }", apiKey, StringUtils.join(items.toArray(), ",") );
+        String response = String.format("{ \"api_key\": \"%s\", \"events\": [%s] }", apiKey, StringUtils.join(items.toArray(), ",") );
 
         //System.out.println( response );
 
