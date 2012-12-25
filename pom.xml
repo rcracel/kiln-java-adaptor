@@ -32,9 +32,9 @@
                 <role>architect</role>
                 <role>developer</role>
             </roles>
-            <timezone>-6</timezone>
+            <timezone>-5</timezone>
             <properties>
-                <picUrl>http://tinyurl.com/prv4t</picUrl>
+                <picUrl>http://www.gravatar.com/avatar/ae369965ebcec97865f6e1e1ab1b8442.png</picUrl>
             </properties>
         </developer>
     </developers>
@@ -123,6 +123,7 @@
             <name>Nexus Staging Repository</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
+
     </distributionManagement>
 
 </project>
