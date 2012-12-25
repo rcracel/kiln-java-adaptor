@@ -1,7 +1,7 @@
 kiln-java-adaptor
 =================
 
-You can find more information on Kiln, the open source platform for log aggregation, visualization and analysis, on its (GitHub page)[https://github.com/rcracel/Kiln].
+You can find more information on Kiln, the open source platform for log aggregation, visualization and analysis, on its [GitHub page](https://github.com/rcracel/Kiln).
 
 # Log4J Appender
 
