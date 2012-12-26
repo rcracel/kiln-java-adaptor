@@ -25,7 +25,7 @@ The project information and source code for the Log4J adaptor is currently avail
 
 ### BuildConfig.groovy
 
-```java
+```groovy
 dependencies {
     runtime 'com.nevermindsoft:kiln-adaptor-java:1.4'
     ....
@@ -33,7 +33,7 @@ dependencies {
 ```
 
 ### Config.groovy
-```java
+```groovy
 log4j = {
     appenders {
         ....
