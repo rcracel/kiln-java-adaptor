@@ -54,18 +54,15 @@ public class KilnPublisher {
             connection.setRequestProperty( "Content-Length", String.valueOf( Integer.toString( ajaxRequest.getBytes().length ) ) );
             connection.setRequestProperty( "Content-Language", "en-US");
 
-            //connection.setDoInput(true);
-
-            //connection.connect();
-
             //Send request
             DataOutputStream wr = new DataOutputStream ( connection.getOutputStream() );
             wr.writeBytes( ajaxRequest );
             wr.flush ();
             wr.close ();
 
+            //- If the response was anything other than OK, print the response information
             if ( connection.getResponseCode() != HttpURLConnection.HTTP_OK ) {
-                System.out.println(" -- Request: " + ajaxRequest);
+                System.out.println(" -- For Request  : " + ajaxRequest);
                 System.out.println(" -- Response code: " + connection.getResponseCode());
 
                 //Get Response
@@ -81,8 +78,6 @@ public class KilnPublisher {
 
                 System.out.println( response.toString() );
             }
-
-//            System.out.println("**** Pushing done with code " + connection.getResponseCode() + " - " + connection.getResponseMessage());
 
         } catch ( MalformedURLException e ) {
             System.out.println("Could not connect to the server: " + e.getMessage());
@@ -116,9 +111,12 @@ public class KilnPublisher {
         for ( LoggingEvent event : events ) {
             StringBuilder me = new StringBuilder();
 
+            String location = String.format("%s.%s (%s)", event.getLocationInformation().getClassName(), event.getLocationInformation().getMethodName(), event.getLocationInformation().getLineNumber());
+
             me.append("{");
 
-            me.append("\"module_name\":\"").append(escapeJSON(moduleName)).append("\",");
+            me.append("\"source\":\"")          .append(escapeJSON(location)).append("\",");
+            me.append("\"module_name\":\"")     .append(escapeJSON(moduleName)).append("\",");
             me.append("\"log_level\":\"")       .append(escapeJSON(event.getLevel().toString())).append("\",");
             me.append("\"message\":\"")         .append(escapeJSON(event.getRenderedMessage())).append("\",");
             me.append("\"timestamp\":\"")       .append(escapeJSON(dateFormatter.format(new Date(event.getTimeStamp())))).append("\",");
@@ -126,16 +124,17 @@ public class KilnPublisher {
             me.append("\"stack_trace\":\"")     .append(escapeJSON(StringUtils.join(event.getThrowableStrRep(), "\n"))).append("\",");
             me.append("\"environment_name\":\"").append(escapeJSON(environmentName)).append("\"");
 
+
             me.append("}");
 
             items.add( me.toString() );
         }
 
-        String response = String.format("{ \"api_key\": \"%s\", \"events\": [%s] }", apiKey, StringUtils.join(items.toArray(), ",") );
+        String result = String.format("{ \"api_key\": \"%s\", \"events\": [%s] }", apiKey, StringUtils.join(items.toArray(), ",") );
 
         //System.out.println( response );
 
-        return response;
+        return result;
     }
 
     /**
