@@ -111,11 +111,8 @@ public class KilnPublisher {
         for ( LoggingEvent event : events ) {
             StringBuilder me = new StringBuilder();
 
-            String location = String.format("%s.%s (%s)", event.getLocationInformation().getClassName(), event.getLocationInformation().getMethodName(), event.getLocationInformation().getLineNumber());
-
             me.append("{");
 
-            me.append("\"source\":\"")          .append(escapeJSON(location)).append("\",");
             me.append("\"module_name\":\"")     .append(escapeJSON(moduleName)).append("\",");
             me.append("\"log_level\":\"")       .append(escapeJSON(event.getLevel().toString())).append("\",");
             me.append("\"message\":\"")         .append(escapeJSON(event.getRenderedMessage())).append("\",");
@@ -124,6 +121,9 @@ public class KilnPublisher {
             me.append("\"stack_trace\":\"")     .append(escapeJSON(StringUtils.join(event.getThrowableStrRep(), "\n"))).append("\",");
             me.append("\"environment_name\":\"").append(escapeJSON(environmentName)).append("\"");
 
+            if ( event.locationInformationExists() ) {
+                me.append("\"source\":\"")      .append(escapeJSON( event.getLocationInformation().fullInfo )).append("\",");
+            }
 
             me.append("}");
 
