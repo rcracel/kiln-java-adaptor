@@ -5,7 +5,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
+ * This Log4j adaptor pushes messages to a pre-configured remote server
  *
+ * User: Roger Cracel
+ * Date: 12/20/12
+ * Time: 3:56 PM
  */
 public class RemoteServiceAppender extends AppenderSkeleton {
 
@@ -19,6 +23,9 @@ public class RemoteServiceAppender extends AppenderSkeleton {
     private int    maxRequestItems = 200;
     private int    sleepTime       = 2000;
 
+    /**
+     * Constructor
+     */
     public RemoteServiceAppender() {
 
     }

@@ -9,7 +9,11 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
+ * The publisher thread pushes log events to the remote server on a predefined interval
  *
+ * User: Roger Cracel
+ * Date: 12/27/12
+ * Time: 11:42 AM
  */
 public class PublisherThread implements Runnable {
 

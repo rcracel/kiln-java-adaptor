@@ -139,7 +139,7 @@ public class KilnPublisher {
             me.append("\"environment_name\":\"").append(escapeJSON(environmentName)).append("\"");
 
             if ( event.locationInformationExists() ) {
-                String source = String.format("%s <%s>", event.getLocationInformation().getClassName(), event.getLocationInformation().getMethodName());
+                String source = String.format("%s.%s(%s)", event.getLocationInformation().getClassName(), event.getLocationInformation().getMethodName(), event.getLocationInformation().getLineNumber());
                 me.append(",\"source\":\"")      .append(escapeJSON(source)).append("\"");
             }
 
