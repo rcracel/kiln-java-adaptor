@@ -1,6 +1,7 @@
 package com.nevermindsoft.kiln;
 
 import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
@@ -9,9 +10,9 @@ import org.apache.log4j.spi.LoggingEvent;
 public class RemoteServiceAppender extends AppenderSkeleton {
 
     private PublisherThread processor;
-    private Thread             thread;
+    private Thread          thread;
 
-    private String moduleName = "Unknown";
+    private String moduleName      = "Unknown";
     private String environmentName = "Unknown";
     private String apiKey          = "xxx-xxx-xxx";
     private String serverUrl       = "http://localhost:8080/polar/api/submit";
@@ -22,6 +23,11 @@ public class RemoteServiceAppender extends AppenderSkeleton {
 
     }
 
+    /**
+     * This method is invoked after all properties are set on this appender. This is where the work actually begins, and
+     * invoking this method will cause the remote server pushing thread to begging monitoring and pushing items to the
+     * remote server.
+     */
     @Override
     public void activateOptions() {
         processor = new PublisherThread( moduleName, apiKey, environmentName, serverUrl, maxRequestItems, sleepTime );
@@ -31,9 +37,9 @@ public class RemoteServiceAppender extends AppenderSkeleton {
         thread.start();
 
         if ( thread.isAlive() ) {
-            System.out.println(" -- " + this.getClass().getSimpleName() + " started....");
+            KilnLogger.log( Level.INFO, this.getClass().getSimpleName() + " started....");
         } else {
-            System.out.println(" -- Could not start " + this.getClass().getSimpleName());
+            KilnLogger.log( Level.INFO,  this.getClass().getSimpleName());
         }
     }
 
@@ -47,7 +53,7 @@ public class RemoteServiceAppender extends AppenderSkeleton {
     @Override
     protected void append( LoggingEvent event ) {
         if ( !processor.queue( event ) ) {
-            System.out.println(" -- Could not queue event");
+            KilnLogger.log( Level.ERROR, "Could not queue event");
         }
     }
 

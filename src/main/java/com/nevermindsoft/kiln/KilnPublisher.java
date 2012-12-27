@@ -2,6 +2,7 @@ package com.nevermindsoft.kiln;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
 import java.io.*;
@@ -16,10 +17,13 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * User: rcracel
+ * The KilnPublisher is responsible for pushing collections of LoggingEvent to a preconfigured Kiln server. This class is
+ * thread safe once constructed and stores no state other than the configuration specified during construction. Configuration
+ * properties specified during construction cannot be modified.
+ *
+ * User: Roger Cracel
  * Date: 12/20/12
  * Time: 3:56 PM
- * To change this template use File | Settings | File Templates.
  */
 public class KilnPublisher {
 
@@ -28,6 +32,14 @@ public class KilnPublisher {
     private String environmentName;
     private String apiKey;
 
+    /**
+     * Constructs a new KilnPublisher that can be used to push event messages to a Kiln server
+     *
+     * @param serverUrl URL of the remote Kiln server
+     * @param apiKey The API key acquired from the Kiln server
+     * @param moduleName The name of the module to report to Kiln
+     * @param environmentName The name of the environment to report to Kiln
+     */
     public KilnPublisher(String serverUrl, String apiKey, String moduleName, String environmentName) {
         this.serverUrl = serverUrl;
         this.moduleName = moduleName;
@@ -35,6 +47,11 @@ public class KilnPublisher {
         this.apiKey = apiKey;
     }
 
+    /**
+     * Pushes a collection of LoggingEvent to the remote Kiln server AJAX
+     *
+     * @param events a list of LoggingEvent to be pushed to the remote repository
+     */
     public void pushItems( List<LoggingEvent> events ) {
         HttpURLConnection connection = null;
 
@@ -42,7 +59,7 @@ public class KilnPublisher {
             String ajaxRequest = buildAjax( events );
             URL url = new URL( serverUrl );
 
-            //System.out.println("**** Pushing " + parameters);
+            // KilnLogger.log( Level.INFO, "Pushing " + parameters);
 
             connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod( "POST" );
@@ -62,8 +79,8 @@ public class KilnPublisher {
 
             //- If the response was anything other than OK, print the response information
             if ( connection.getResponseCode() != HttpURLConnection.HTTP_OK ) {
-                System.out.println(" -- For Request  : " + ajaxRequest);
-                System.out.println(" -- Response code: " + connection.getResponseCode());
+                KilnLogger.log( Level.INFO, "For Request  : " + ajaxRequest);
+                KilnLogger.log( Level.INFO, "Response code: " + connection.getResponseCode());
 
                 //Get Response
                 InputStream is = connection.getInputStream();
@@ -76,17 +93,17 @@ public class KilnPublisher {
                 }
                 rd.close();
 
-                System.out.println( response.toString() );
+                KilnLogger.log( Level.INFO, response.toString() );
             }
 
         } catch ( MalformedURLException e ) {
-            System.out.println("Could not connect to the server: " + e.getMessage());
+            KilnLogger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
         } catch ( ProtocolException e ) {
-            System.out.println("Could not connect to the server: " + e.getMessage());
+            KilnLogger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
         } catch ( IOException e ) {
-            System.out.println("Could not connect to the server: " + e.getMessage());
+            KilnLogger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
         } catch ( Exception e ) {
-            System.out.println("Could not connect to the server: " + e.getMessage());
+            KilnLogger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
         } finally {
             if ( connection != null ) {
                 connection.disconnect();
@@ -122,7 +139,8 @@ public class KilnPublisher {
             me.append("\"environment_name\":\"").append(escapeJSON(environmentName)).append("\"");
 
             if ( event.locationInformationExists() ) {
-                me.append("\"source\":\"")      .append(escapeJSON( event.getLocationInformation().fullInfo )).append("\",");
+                String source = String.format("%s <%s>", event.getLocationInformation().getClassName(), event.getLocationInformation().getMethodName());
+                me.append(",\"source\":\"")      .append(escapeJSON(source)).append("\"");
             }
 
             me.append("}");
@@ -132,15 +150,14 @@ public class KilnPublisher {
 
         String result = String.format("{ \"api_key\": \"%s\", \"events\": [%s] }", apiKey, StringUtils.join(items.toArray(), ",") );
 
-        //System.out.println( response );
-
         return result;
     }
 
     /**
+     * Escapes a JSON string
      *
-     * @param json
-     * @return
+     * @param json the input string
+     * @return the escaped json string
      */
     private static String escapeJSON( String json ) {
         return StringEscapeUtils.escapeJavaScript(json);
