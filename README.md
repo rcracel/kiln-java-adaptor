@@ -17,7 +17,7 @@ The project information and source code for the Log4J adaptor is currently avail
 <dependency>
     <groupId>com.nevermindsoft</groupId>
     <artifactId>kiln-adaptor-java</artifactId>
-    <version>1.5</version>
+    <version>1.6</version>
 </dependency>
 ```
 
