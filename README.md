@@ -57,7 +57,7 @@ log4j = {
 }
 ```
 
-# Changelog
+### Changelog
 
 * 1.7
     * Fixed bug causing stack traces to be populated with the string "null"
