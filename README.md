@@ -17,7 +17,7 @@ The project information and source code for the Log4J adaptor is currently avail
 <dependency>
     <groupId>com.nevermindsoft</groupId>
     <artifactId>kiln-adaptor-java</artifactId>
-    <version>1.6</version>
+    <version>1.7</version>
 </dependency>
 ```
 
@@ -27,7 +27,7 @@ The project information and source code for the Log4J adaptor is currently avail
 
 ```groovy
 dependencies {
-    runtime 'com.nevermindsoft:kiln-adaptor-java:1.5'
+    runtime 'com.nevermindsoft:kiln-adaptor-java:1.7'
     ....
 }
 ```
@@ -56,3 +56,8 @@ log4j = {
     }
 }
 ```
+
+# Changelog
+
+* 1.7
+    * Fixed bug causing stack traces to be populated with the string "null"
