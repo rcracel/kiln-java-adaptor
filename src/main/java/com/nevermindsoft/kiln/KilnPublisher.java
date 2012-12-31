@@ -135,8 +135,12 @@ public class KilnPublisher {
             me.append("\"message\":\"")         .append(escapeJSON(event.getRenderedMessage())).append("\",");
             me.append("\"timestamp\":\"")       .append(escapeJSON(dateFormatter.format(new Date(event.getTimeStamp())))).append("\",");
             me.append("\"thread_name\":\"")     .append(escapeJSON(event.getThreadName())).append("\",");
-            me.append("\"stack_trace\":\"")     .append(escapeJSON(StringUtils.join(event.getThrowableStrRep(), "\n"))).append("\",");
             me.append("\"environment_name\":\"").append(escapeJSON(environmentName)).append("\"");
+
+            String stackTrace = escapeJSON(StringUtils.join(event.getThrowableStrRep(), "\n"));
+            if ( stackTrace != null ) {
+                me.append("\"stack_trace\":\"")     .append(stackTrace).append("\",");
+            }
 
             if ( event.locationInformationExists() ) {
                 String source = String.format("%s.%s(%s)", event.getLocationInformation().getClassName(), event.getLocationInformation().getMethodName(), event.getLocationInformation().getLineNumber());
@@ -160,7 +164,7 @@ public class KilnPublisher {
      * @return the escaped json string
      */
     private static String escapeJSON( String json ) {
-        return StringEscapeUtils.escapeJavaScript(json);
+        return json == null ? null : StringEscapeUtils.escapeJavaScript(json);
     }
 
 
