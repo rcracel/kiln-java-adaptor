@@ -59,6 +59,16 @@ public class RemoteServiceAppender extends AppenderSkeleton {
      */
     @Override
     protected void append( LoggingEvent event ) {
+        event.getNDC();
+        event.getThreadName();
+
+        // Get a copy of this thread's MDC.
+        event.getMDCCopy();
+        event.getLocationInformation();
+
+        event.getRenderedMessage();
+        event.getThrowableStrRep();
+
         if ( !processor.queue( event ) ) {
             KilnLogger.log( Level.ERROR, "Could not queue event");
         }
