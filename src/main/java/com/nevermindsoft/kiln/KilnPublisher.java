@@ -130,13 +130,7 @@ public class KilnPublisher {
 
             me.append("{");
 
-            me.append("\"module_name\":\"")     .append(escapeJSON(moduleName)).append("\",");
-            me.append("\"log_level\":\"")       .append(escapeJSON(event.getLevel().toString())).append("\",");
-            me.append("\"message\":\"")         .append(escapeJSON(event.getRenderedMessage())).append("\",");
-            me.append("\"timestamp\":\"")       .append(escapeJSON(dateFormatter.format(new Date(event.getTimeStamp())))).append("\",");
-            me.append("\"thread_name\":\"")     .append(escapeJSON(event.getThreadName())).append("\",");
-            me.append("\"environment_name\":\"").append(escapeJSON(environmentName)).append("\"");
-
+            //- The optional properties go in first to avoid issues with commas
             String stackTrace = escapeJSON(StringUtils.join(event.getThrowableStrRep(), "\n"));
             if ( stackTrace != null ) {
                 me.append("\"stack_trace\":\"")     .append(stackTrace).append("\",");
@@ -144,8 +138,15 @@ public class KilnPublisher {
 
             if ( event.locationInformationExists() ) {
                 String source = String.format("%s.%s(%s)", event.getLocationInformation().getClassName(), event.getLocationInformation().getMethodName(), event.getLocationInformation().getLineNumber());
-                me.append(",\"source\":\"")      .append(escapeJSON(source)).append("\"");
+                me.append(",\"source\":\"")      .append(escapeJSON(source)).append("\",");
             }
+
+            me.append("\"module_name\":\"")     .append(escapeJSON(moduleName)).append("\",");
+            me.append("\"log_level\":\"")       .append(escapeJSON(event.getLevel().toString())).append("\",");
+            me.append("\"message\":\"")         .append(escapeJSON(event.getRenderedMessage())).append("\",");
+            me.append("\"timestamp\":\"")       .append(escapeJSON(dateFormatter.format(new Date(event.getTimeStamp())))).append("\",");
+            me.append("\"thread_name\":\"")     .append(escapeJSON(event.getThreadName())).append("\",");
+            me.append("\"environment_name\":\"").append(escapeJSON(environmentName)).append("\"");
 
             me.append("}");
 
