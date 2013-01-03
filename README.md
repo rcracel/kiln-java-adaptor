@@ -71,6 +71,7 @@ log4j = {
 * **maxRequestItems** - the maximum number of events to send on a single request. Used for throttling and to avoid server overload and failure due to very large requests.
 * **sleepTime** - the time between requests in milliseconds. The appender will keep an internal queue of events and send them out to the server at the given interval.
 * **internalLogger** - the instance of a KilnInternalLogger to be used for internal logging. The default is to use a com.nevermindsoft.kiln.internal.log.KilnConsoleLogger( Level.ALL ). See documentation for more options.
+* **internalLoggerClassName** - the name of the class to be used for internal logging. This is an alternate way to specify the internal logger. Using the *internalLogger* property should be used instead whenever possible.
 
 ## Changelog
 

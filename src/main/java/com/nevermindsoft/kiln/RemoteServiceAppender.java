@@ -3,6 +3,7 @@ package com.nevermindsoft.kiln;
 import com.nevermindsoft.kiln.internal.log.KilnConsoleInternalLogger;
 import com.nevermindsoft.kiln.internal.log.KilnInternalLogger;
 import com.nevermindsoft.kiln.internal.workers.PublisherThread;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
@@ -20,6 +21,7 @@ public class RemoteServiceAppender extends AppenderSkeleton {
     private Thread          thread;
 
     private KilnInternalLogger internalLogger;
+    private String             internalLoggerClassName;
 
     private String          moduleName      = "Unknown";
     private String          environmentName = "Unknown";
@@ -42,9 +44,26 @@ public class RemoteServiceAppender extends AppenderSkeleton {
      */
     @Override
     public void activateOptions() {
+        if ( internalLogger == null && !StringUtils.isBlank( internalLoggerClassName ) ) {
+            try {
+                Class<?> loggerClass = Class.forName( internalLoggerClassName );
+                if ( KilnInternalLogger.class.isAssignableFrom( loggerClass ) ) {
+                    internalLogger = (KilnInternalLogger) loggerClass.newInstance();
+                } else {
+                    //- We don't yet have a logger to report to, so the only option is to use System.out
+                    System.out.println("!!!!!!!!! Could not initialize internal logger with property from internalLoggerClassName, it does not implement KilnInternalLogger !!!!!!!!!");
+                }
+            } catch (Exception e) {
+                //- We don't yet have a logger to report to, so the only option is to use System.out
+                System.out.println("!!!!!!!!! Could not resolve class from name !!!!!!!!!");
+                e.printStackTrace();
+            }
+        }
+
         if ( internalLogger == null ) {
             internalLogger = new KilnConsoleInternalLogger();
         }
+
 
         processor = new PublisherThread( moduleName, apiKey, environmentName, serverUrl, maxRequestItems, sleepTime, internalLogger );
 
@@ -145,5 +164,9 @@ public class RemoteServiceAppender extends AppenderSkeleton {
 
     public void setInternalLogger( KilnInternalLogger internalLogger ) {
         this.internalLogger = internalLogger;
+    }
+
+    public void setInternalLoggerClassName( String internalLoggerClassName ) {
+        this.internalLoggerClassName = internalLoggerClassName;
     }
 }
