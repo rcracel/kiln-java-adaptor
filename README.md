@@ -63,14 +63,14 @@ log4j = {
 
 ## Configuration Options
 
-* name - specifies the name for this appender. You will use this name as a reference in your log configuration file to specify which messages are to be logged.
-* moduleName - specifies the name of the module we are using to produce messages. This may be removed on a future version.
-* apiKey - the api key configured on your Kiln service. The application name will be automatically deducted from this api key.
-* environmentName - you can specify your environment for more finely grained Kiln filtering. Typical values are production, staging, test, environment, but the value of this property can be any string.
-* serverUrl - the url for your publish operation on your kiln service. This will typically be on the format http://[your domain or ip]/api/events/publish unless modified on the server source code.
-* maxRequestItems: the maximum number of events to send on a single request. Used for throttling and to avoid server overload and failure due to very large requests.
-* sleepTime: the time between requests in milliseconds. The appender will keep an internal queue of events and send them out to the server at the given interval.
-* internalLogger: the instance of a KilnInternalLogger to be used for internal logging. The default is to use a com.nevermindsoft.kiln.internal.log.KilnConsoleLogger( Level.ALL ). See documentation for more options.
+* **name** - specifies the name for this appender. You will use this name as a reference in your log configuration file to specify which messages are to be logged.
+* **moduleName** - specifies the name of the module we are using to produce messages. This may be removed on a future version.
+* **apiKey** - the api key configured on your Kiln service. The application name will be automatically deducted from this api key.
+* **environmentName** - you can specify your environment for more finely grained Kiln filtering. Typical values are production, staging, test, environment, but the value of this property can be any string.
+* **serverUrl** - the url for your publish operation on your kiln service. This will typically be on the format http://[your domain or ip]/api/events/publish unless modified on the server source code.
+* **maxRequestItems** - the maximum number of events to send on a single request. Used for throttling and to avoid server overload and failure due to very large requests.
+* **sleepTime** - the time between requests in milliseconds. The appender will keep an internal queue of events and send them out to the server at the given interval.
+* **internalLogger** - the instance of a KilnInternalLogger to be used for internal logging. The default is to use a com.nevermindsoft.kiln.internal.log.KilnConsoleLogger( Level.ALL ). See documentation for more options.
 
 ## Changelog
 
