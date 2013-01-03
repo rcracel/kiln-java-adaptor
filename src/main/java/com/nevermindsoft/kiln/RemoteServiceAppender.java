@@ -1,5 +1,8 @@
 package com.nevermindsoft.kiln;
 
+import com.nevermindsoft.kiln.internal.log.KilnConsoleInternalLogger;
+import com.nevermindsoft.kiln.internal.log.KilnInternalLogger;
+import com.nevermindsoft.kiln.internal.workers.PublisherThread;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
@@ -16,12 +19,14 @@ public class RemoteServiceAppender extends AppenderSkeleton {
     private PublisherThread processor;
     private Thread          thread;
 
-    private String moduleName      = "Unknown";
-    private String environmentName = "Unknown";
-    private String apiKey          = "xxx-xxx-xxx";
-    private String serverUrl       = "http://localhost:8080/polar/api/submit";
-    private int    maxRequestItems = 200;
-    private int    sleepTime       = 2000;
+    private KilnInternalLogger internalLogger;
+
+    private String          moduleName      = "Unknown";
+    private String          environmentName = "Unknown";
+    private String          apiKey          = "xxx-xxx-xxx";
+    private String          serverUrl       = "http://localhost:8080/api/events/publish";
+    private int             maxRequestItems = 200;
+    private int             sleepTime       = 2000;
 
     /**
      * Constructor
@@ -37,16 +42,20 @@ public class RemoteServiceAppender extends AppenderSkeleton {
      */
     @Override
     public void activateOptions() {
-        processor = new PublisherThread( moduleName, apiKey, environmentName, serverUrl, maxRequestItems, sleepTime );
+        if ( internalLogger == null ) {
+            internalLogger = new KilnConsoleInternalLogger();
+        }
+
+        processor = new PublisherThread( moduleName, apiKey, environmentName, serverUrl, maxRequestItems, sleepTime, internalLogger );
 
         thread = new Thread( processor );
 
         thread.start();
 
         if ( thread.isAlive() ) {
-            KilnLogger.log( Level.INFO, this.getClass().getSimpleName() + " started....");
+            internalLogger.log( Level.INFO, this.getClass().getSimpleName() + " started....");
         } else {
-            KilnLogger.log( Level.INFO,  this.getClass().getSimpleName());
+            internalLogger.log( Level.INFO,  this.getClass().getSimpleName());
         }
     }
 
@@ -70,7 +79,7 @@ public class RemoteServiceAppender extends AppenderSkeleton {
         event.getThrowableStrRep();
 
         if ( !processor.queue( event ) ) {
-            KilnLogger.log( Level.ERROR, "Could not queue event");
+            internalLogger.log( Level.ERROR, "Could not queue event");
         }
     }
 
@@ -132,5 +141,9 @@ public class RemoteServiceAppender extends AppenderSkeleton {
 
     public void setApiKey( String apiKey ) {
         this.apiKey = apiKey;
+    }
+
+    public void setInternalLogger( KilnInternalLogger internalLogger ) {
+        this.internalLogger = internalLogger;
     }
 }

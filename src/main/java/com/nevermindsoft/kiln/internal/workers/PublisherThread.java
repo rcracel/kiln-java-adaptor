@@ -1,5 +1,7 @@
-package com.nevermindsoft.kiln;
+package com.nevermindsoft.kiln.internal.workers;
 
+import com.nevermindsoft.kiln.internal.log.KilnInternalLogger;
+import com.nevermindsoft.kiln.internal.publishers.KilnPublisher;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -35,6 +37,8 @@ public class PublisherThread implements Runnable {
 
     private KilnPublisher publisher;
 
+    private KilnInternalLogger logger;
+
     /**
      * Constructor for the publisher thread.
      *
@@ -45,13 +49,14 @@ public class PublisherThread implements Runnable {
      * @param maxItems the maximum number of items to send on a single request
      * @param sleepTime the time to wait between pushes
      */
-    public PublisherThread(String moduleName, String apiKey, String environmentName, String serverUrl, int maxItems, int sleepTime) {
+    public PublisherThread(String moduleName, String apiKey, String environmentName, String serverUrl, int maxItems, int sleepTime, KilnInternalLogger logger) {
         this.moduleName = moduleName;
         this.environmentName = environmentName;
         this.serverUrl = serverUrl;
         this.maxItems = maxItems;
         this.sleepTime = sleepTime;
         this.apiKey = apiKey;
+        this.logger = logger;
     }
 
     /**
@@ -85,19 +90,19 @@ public class PublisherThread implements Runnable {
                 if ( !localQueue.isEmpty() ) {
                     pushItems( localQueue );
                 } else {
-                    //KilnLogger.log( Level.WARN, "Queue is empty" );
+                    //KilnInternalLogger.log( Level.WARN, "Queue is empty" );
                 }
 
                 if ( localQueue.isEmpty() )
                     Thread.sleep( sleepTime );
             }
         } catch ( InterruptedException e ) {
-            KilnLogger.log( Level.ERROR, "The log published has be halted due to a InterruptedException");
+            logger.log(Level.ERROR, "The log published has be halted due to a InterruptedException");
         } catch ( Exception e ) {
-            KilnLogger.log( Level.ERROR, "Unexpected error, halting thread: " + e.getMessage(), e );
+            logger.log( Level.ERROR, "Unexpected error, halting thread: " + e.getMessage(), e );
         }
 
-        KilnLogger.log( Level.WARN, "Log Published Thread has stopped" );
+        logger.log( Level.WARN, "Log Published Thread has stopped" );
     }
 
     /**
@@ -144,7 +149,7 @@ public class PublisherThread implements Runnable {
         if ( publisher == null ) {
             synchronized (this) {
                 if ( publisher == null ) {
-                    publisher = new KilnPublisher( getServerUrl(), getApiKey(), getModuleName(), getEnvironmentName() );
+                    publisher = new KilnPublisher( getServerUrl(), getApiKey(), getModuleName(), getEnvironmentName(), logger );
                 }
             }
         }

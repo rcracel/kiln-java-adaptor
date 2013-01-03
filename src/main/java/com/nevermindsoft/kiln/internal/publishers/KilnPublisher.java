@@ -1,5 +1,6 @@
-package com.nevermindsoft.kiln;
+package com.nevermindsoft.kiln.internal.publishers;
 
+import com.nevermindsoft.kiln.internal.log.KilnInternalLogger;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
@@ -27,6 +28,8 @@ import java.util.List;
  */
 public class KilnPublisher {
 
+    private KilnInternalLogger logger;
+
     private String serverUrl;
     private String moduleName;
     private String environmentName;
@@ -40,11 +43,12 @@ public class KilnPublisher {
      * @param moduleName The name of the module to report to Kiln
      * @param environmentName The name of the environment to report to Kiln
      */
-    public KilnPublisher(String serverUrl, String apiKey, String moduleName, String environmentName) {
+    public KilnPublisher(String serverUrl, String apiKey, String moduleName, String environmentName, KilnInternalLogger logger) {
         this.serverUrl = serverUrl;
         this.moduleName = moduleName;
         this.environmentName = environmentName;
         this.apiKey = apiKey;
+        this.logger = logger;
     }
 
     /**
@@ -59,7 +63,7 @@ public class KilnPublisher {
             String ajaxRequest = buildAjax( events );
             URL url = new URL( serverUrl );
 
-            // KilnLogger.log( Level.INFO, "Pushing " + parameters);
+            // KilnInternalLogger.log( Level.INFO, "Pushing " + parameters);
 
             connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod( "POST" );
@@ -79,8 +83,8 @@ public class KilnPublisher {
 
             //- If the response was anything other than OK, print the response information
             if ( connection.getResponseCode() != HttpURLConnection.HTTP_OK ) {
-                KilnLogger.log( Level.INFO, "For Request  : " + ajaxRequest);
-                KilnLogger.log( Level.INFO, "Response code: " + connection.getResponseCode());
+                logger.log(Level.INFO, "For Request  : " + ajaxRequest);
+                logger.log( Level.INFO, "Response code: " + connection.getResponseCode());
 
                 //Get Response
                 InputStream is = connection.getInputStream();
@@ -93,17 +97,17 @@ public class KilnPublisher {
                 }
                 rd.close();
 
-                KilnLogger.log( Level.INFO, response.toString() );
+                logger.log( Level.INFO, response.toString() );
             }
 
         } catch ( MalformedURLException e ) {
-            KilnLogger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
+            logger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
         } catch ( ProtocolException e ) {
-            KilnLogger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
+            logger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
         } catch ( IOException e ) {
-            KilnLogger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
+            logger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
         } catch ( Exception e ) {
-            KilnLogger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
+            logger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
         } finally {
             if ( connection != null ) {
                 connection.disconnect();
@@ -126,31 +130,25 @@ public class KilnPublisher {
 
         //- Build the query parameters
         for ( LoggingEvent event : events ) {
-            StringBuilder me = new StringBuilder();
+            List<String> keyValueList = new ArrayList<String>();
 
-            me.append("{");
+            keyValueList.add(String.format("\"module_name\":\"%s\"", escapeJSON(moduleName)));
+            keyValueList.add(String.format("\"log_level\":\"%s\"", escapeJSON(event.getLevel().toString())));
+            keyValueList.add(String.format("\"message\":\"%s\"", escapeJSON(event.getRenderedMessage())));
+            keyValueList.add(String.format("\"timestamp\":\"%s\"", escapeJSON(dateFormatter.format(new Date(event.getTimeStamp())))));
+            keyValueList.add(String.format("\"thread_name\":\"%s\"", escapeJSON(event.getThreadName())));
+            keyValueList.add(String.format("\"environment_name\":\"%s\"", escapeJSON(environmentName)));
 
-            //- The optional properties go in first to avoid issues with commas
-            String stackTrace = escapeJSON(StringUtils.join(event.getThrowableStrRep(), "\n"));
-            if ( stackTrace != null ) {
-                me.append("\"stack_trace\":\"")     .append(stackTrace).append("\",");
+            String stackTrace = StringUtils.join(event.getThrowableStrRep(), "\n");
+            if ( StringUtils.isNotBlank( stackTrace ) ) {
+                keyValueList.add(String.format("\"stack_trace\":\"%s\"", escapeJSON(stackTrace)));
             }
 
             if ( event.locationInformationExists() ) {
-                String source = String.format("%s.%s(%s)", event.getLocationInformation().getClassName(), event.getLocationInformation().getMethodName(), event.getLocationInformation().getLineNumber());
-                me.append(",\"source\":\"")      .append(escapeJSON(source)).append("\",");
+                keyValueList.add(String.format("\"source\":\"%s\"", event.getLocationInformation().fullInfo));
             }
 
-            me.append("\"module_name\":\"")     .append(escapeJSON(moduleName)).append("\",");
-            me.append("\"log_level\":\"")       .append(escapeJSON(event.getLevel().toString())).append("\",");
-            me.append("\"message\":\"")         .append(escapeJSON(event.getRenderedMessage())).append("\",");
-            me.append("\"timestamp\":\"")       .append(escapeJSON(dateFormatter.format(new Date(event.getTimeStamp())))).append("\",");
-            me.append("\"thread_name\":\"")     .append(escapeJSON(event.getThreadName())).append("\",");
-            me.append("\"environment_name\":\"").append(escapeJSON(environmentName)).append("\"");
-
-            me.append("}");
-
-            items.add( me.toString() );
+            items.add( String.format( "{%s}", StringUtils.join( keyValueList, "," ) ) );
         }
 
         String result = String.format("{ \"api_key\": \"%s\", \"events\": [%s] }", apiKey, StringUtils.join(items.toArray(), ",") );
