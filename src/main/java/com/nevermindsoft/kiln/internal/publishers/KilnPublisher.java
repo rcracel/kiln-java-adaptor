@@ -1,16 +1,25 @@
 package com.nevermindsoft.kiln.internal.publishers;
 
 import com.nevermindsoft.kiln.internal.log.KilnInternalLogger;
+import com.sun.net.ssl.internal.ssl.Provider;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.*;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
+import javax.net.ssl.SSLSocketFactory;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.security.Security;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,62 +66,30 @@ public class KilnPublisher {
      * @param events a list of LoggingEvent to be pushed to the remote repository
      */
     public void pushItems( List<LoggingEvent> events ) {
-        HttpURLConnection connection = null;
 
         try {
-            String ajaxRequest = buildAjax( events );
-            URL url = new URL( serverUrl );
+            StringEntity entity = new StringEntity( buildAjax( events ) );
 
-            // KilnInternalLogger.log( Level.INFO, "Pushing " + parameters);
+            HttpClient client = new DefaultHttpClient();
+            HttpPost post = new HttpPost( serverUrl );
 
-            connection = (HttpURLConnection)url.openConnection();
-            connection.setRequestMethod( "POST" );
-            connection.setDoOutput(true);
-            connection.setUseCaches(false);
+            post.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+            post.addHeader(HttpHeaders.ACCEPT, "application/json");
+            post.addHeader(HttpHeaders.CONTENT_LANGUAGE, "en-US");
+            post.setEntity( entity );
 
-            connection.setRequestProperty( "Content-Type", "application/json");
-            connection.setRequestProperty( "Accept", "application/json");
-            connection.setRequestProperty( "Content-Length", String.valueOf( Integer.toString( ajaxRequest.getBytes().length ) ) );
-            connection.setRequestProperty( "Content-Language", "en-US");
+            HttpResponse response = client.execute( post );
+            StatusLine status = response.getStatusLine();
 
-            //Send request
-            DataOutputStream wr = new DataOutputStream ( connection.getOutputStream() );
-            wr.writeBytes( ajaxRequest );
-            wr.flush ();
-            wr.close ();
-
-            //- If the response was anything other than OK, print the response information
-            if ( connection.getResponseCode() != HttpURLConnection.HTTP_OK ) {
-                logger.log(Level.INFO, "For Request  : " + ajaxRequest);
-                logger.log( Level.INFO, "Response code: " + connection.getResponseCode());
-
-                //Get Response
-                InputStream is = connection.getInputStream();
-                BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-                String line;
-                StringBuilder response = new StringBuilder();
-                while((line = rd.readLine()) != null) {
-                    response.append(line);
-                    response.append('\n');
-                }
-                rd.close();
-
-                logger.log( Level.INFO, response.toString() );
+            if ( status.getStatusCode() != HttpStatus.SC_OK ) {
+                logger.log( Level.ERROR, String.format("%d %s", status.getStatusCode(), status.getReasonPhrase()) );
             }
-
-        } catch ( MalformedURLException e ) {
-            logger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
-        } catch ( ProtocolException e ) {
-            logger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
+        } catch ( UnsupportedEncodingException e ) {
+            logger.log( Level.ERROR, "Failed to compose json request: " + e.getMessage());
         } catch ( IOException e ) {
             logger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
-        } catch ( Exception e ) {
-            logger.log( Level.ERROR, "Could not connect to the server: " + e.getMessage());
-        } finally {
-            if ( connection != null ) {
-                connection.disconnect();
-            }
         }
+
     }
 
     /**

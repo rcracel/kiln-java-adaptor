@@ -12,16 +12,18 @@ import org.apache.log4j.Level;
  */
 public class KilnConsoleInternalLogger implements KilnInternalLogger {
 
-    private Level minLevel = Level.ALL;
+    private Level minLevel;
 
     /**
-     * Default constructor, will log all events
+     * Default constructor, will log all events WARN or higher
      */
     public KilnConsoleInternalLogger() {
+        this( Level.WARN );
     }
 
     /**
      * Default constructor, will log all level of the given level or higher
+     *
      * @param minLevel the minimum level to log
      */
     public KilnConsoleInternalLogger(Level minLevel) {
