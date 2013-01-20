@@ -23,18 +23,13 @@ public class RemoteServiceAppender extends AppenderSkeleton {
     private KilnInternalLogger internalLogger;
     private String             internalLoggerClassName;
 
-    private String          moduleName      = "Unknown";
-    private String          environmentName = "Unknown";
-    private String          apiKey          = "xxx-xxx-xxx";
-    private String          serverUrl       = "http://localhost:8080/api/events/publish";
-    private int             maxRequestItems = 200;
-    private int             sleepTime       = 2000;
+    private Config             config;
 
     /**
      * Constructor
      */
     public RemoteServiceAppender() {
-
+        this.config = new Config();
     }
 
     /**
@@ -49,6 +44,7 @@ public class RemoteServiceAppender extends AppenderSkeleton {
                 Class<?> loggerClass = Class.forName( internalLoggerClassName );
                 if ( KilnInternalLogger.class.isAssignableFrom( loggerClass ) ) {
                     internalLogger = (KilnInternalLogger) loggerClass.newInstance();
+                    config.logger = internalLogger;
                 } else {
                     //- We don't yet have a logger to report to, so the only option is to use System.out
                     System.out.println("!!!!!!!!! Could not initialize internal logger with property from internalLoggerClassName, it does not implement KilnInternalLogger !!!!!!!!!");
@@ -65,7 +61,7 @@ public class RemoteServiceAppender extends AppenderSkeleton {
         }
 
 
-        processor = new PublisherThread( moduleName, apiKey, environmentName, serverUrl, maxRequestItems, sleepTime, internalLogger );
+        processor = new PublisherThread( config );
 
         thread = new Thread( processor );
 
@@ -139,27 +135,32 @@ public class RemoteServiceAppender extends AppenderSkeleton {
 
 
     public void setModuleName(String moduleName) {
-        this.moduleName = moduleName;
+        config.moduleName = moduleName;
+
     }
 
     public void setServerUrl(String serverUrl) {
-        this.serverUrl = serverUrl;
+        config.serverUrl = serverUrl;
     }
 
     public void setMaxRequestItems(int maxRequestItems) {
-        this.maxRequestItems = maxRequestItems;
+        config.maxRequestItems = maxRequestItems;
     }
 
     public void setSleepTime(int sleepTime) {
-        this.sleepTime = sleepTime;
+        config.sleepTime = sleepTime;
     }
 
     public void setEnvironmentName( String environmentName ) {
-        this.environmentName = environmentName;
+        config.environmentName = environmentName;
     }
 
     public void setApiKey( String apiKey ) {
-        this.apiKey = apiKey;
+        config.apiKey = apiKey;
+    }
+
+    public void setLanguage( String language ) {
+        config.platform = language;
     }
 
     public void setInternalLogger( KilnInternalLogger internalLogger ) {
@@ -168,5 +169,51 @@ public class RemoteServiceAppender extends AppenderSkeleton {
 
     public void setInternalLoggerClassName( String internalLoggerClassName ) {
         this.internalLoggerClassName = internalLoggerClassName;
+    }
+
+    public static class Config {
+
+        private KilnInternalLogger logger;
+
+        private String moduleName      = "Unknown";
+        private String environmentName = "Unknown";
+        private String apiKey          = "xxx-xxx-xxx";
+        private String serverUrl       = "http://localhost:8080/api/events/publish";
+        private int    maxRequestItems = 200;
+        private int    sleepTime       = 2000;
+        private String platform = "Java";
+
+
+        public String getModuleName() {
+            return moduleName;
+        }
+
+        public String getEnvironmentName() {
+            return environmentName;
+        }
+
+        public String getApiKey() {
+            return apiKey;
+        }
+
+        public String getServerUrl() {
+            return serverUrl;
+        }
+
+        public int getMaxRequestItems() {
+            return maxRequestItems;
+        }
+
+        public int getSleepTime() {
+            return sleepTime;
+        }
+
+        public String getPlatform() {
+            return platform;
+        }
+
+        public KilnInternalLogger getLogger() {
+            return logger;
+        }
     }
 }

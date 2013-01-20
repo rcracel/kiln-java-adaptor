@@ -1,7 +1,7 @@
 package com.nevermindsoft.kiln.internal.workers;
 
-import com.nevermindsoft.kiln.internal.log.KilnInternalLogger;
 import com.nevermindsoft.kiln.internal.publishers.KilnPublisher;
+import com.nevermindsoft.kiln.RemoteServiceAppender.Config;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -23,40 +23,17 @@ public class PublisherThread implements Runnable {
 
     private boolean shouldRun = true;
 
-    private String moduleName;
-
-    private String apiKey;
-
-    private String environmentName;
-
-    private String serverUrl;
-
-    private int maxItems;
-
-    private int sleepTime;
-
     private KilnPublisher publisher;
 
-    private KilnInternalLogger logger;
+    private Config config;
 
     /**
-     * Constructor for the publisher thread.
+     * Constructor for the published thread.
      *
-     * @param moduleName the name of the module to be reported to the remote server
-     * @param apiKey the api key to be reported to the remote server
-     * @param environmentName the environment name to be reported to the remote server
-     * @param serverUrl the server url of the remote server
-     * @param maxItems the maximum number of items to send on a single request
-     * @param sleepTime the time to wait between pushes
+     * @param config configuration for the appender
      */
-    public PublisherThread(String moduleName, String apiKey, String environmentName, String serverUrl, int maxItems, int sleepTime, KilnInternalLogger logger) {
-        this.moduleName = moduleName;
-        this.environmentName = environmentName;
-        this.serverUrl = serverUrl;
-        this.maxItems = maxItems;
-        this.sleepTime = sleepTime;
-        this.apiKey = apiKey;
-        this.logger = logger;
+    public PublisherThread( Config config ) {
+        this.config = config;
     }
 
     /**
@@ -80,7 +57,7 @@ public class PublisherThread implements Runnable {
             while ( shouldRun ) {
                 List<LoggingEvent> localQueue = new ArrayList<LoggingEvent>();
 
-                for ( int index = 0 ; index < maxItems ; index++ ) {
+                for ( int index = 0 ; index < config.getMaxRequestItems() ; index++ ) {
                     LoggingEvent event = eventQueue.poll();
                     if ( event != null ) {
                         localQueue.add( event );
@@ -94,15 +71,15 @@ public class PublisherThread implements Runnable {
                 }
 
                 if ( localQueue.isEmpty() )
-                    Thread.sleep( sleepTime );
+                    Thread.sleep( config.getSleepTime() );
             }
         } catch ( InterruptedException e ) {
-            logger.log(Level.ERROR, "The log published has be halted due to a InterruptedException");
+            config.getLogger().log(Level.ERROR, "The log published has be halted due to a InterruptedException");
         } catch ( Exception e ) {
-            logger.log( Level.ERROR, "Unexpected error, halting thread: " + e.getMessage(), e );
+            config.getLogger().log( Level.ERROR, "Unexpected error, halting thread: " + e.getMessage(), e );
         }
 
-        logger.log( Level.WARN, "Log Published Thread has stopped" );
+        config.getLogger().log( Level.WARN, "Log Published Thread has stopped" );
     }
 
     /**
@@ -127,7 +104,7 @@ public class PublisherThread implements Runnable {
                 localQueue.add( event );
             }
 
-            if ( localQueue.size() >= maxItems ) {
+            if ( localQueue.size() >= config.getMaxRequestItems() ) {
                 getPublisher().pushItems(localQueue);
                 localQueue.clear();
             }
@@ -149,26 +126,11 @@ public class PublisherThread implements Runnable {
         if ( publisher == null ) {
             synchronized (this) {
                 if ( publisher == null ) {
-                    publisher = new KilnPublisher( getServerUrl(), getApiKey(), getModuleName(), getEnvironmentName(), logger );
+                    publisher = new KilnPublisher( config );
                 }
             }
         }
         return publisher;
     }
 
-    public String getModuleName() {
-        return moduleName;
-    }
-
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public String getEnvironmentName() {
-        return environmentName;
-    }
-
-    public String getServerUrl() {
-        return serverUrl;
-    }
 }

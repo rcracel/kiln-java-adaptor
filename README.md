@@ -75,6 +75,11 @@ log4j = {
 
 ## Changelog
 
+* 1.10
+    * Refactoring appender configuration into its own class
+    * Adding support for specifying a platform (Java,Grails,...) with a default value of Java
+    * Adding support for environment metadata and automatically adding following properties:
+        * Java Version
 * 1.9
     * Adding an option to specify the internal logger to use
     * Adding option to indicate how the source reference should be represented on the generated json to allow using the appender across frameworks
