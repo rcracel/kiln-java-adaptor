@@ -159,16 +159,16 @@ public class RemoteServiceAppender extends AppenderSkeleton {
         config.apiKey = apiKey;
     }
 
-    public void setLanguage( String language ) {
-        config.platform = language;
-    }
-
     public void setInternalLogger( KilnInternalLogger internalLogger ) {
         this.internalLogger = internalLogger;
     }
 
     public void setInternalLoggerClassName( String internalLoggerClassName ) {
         this.internalLoggerClassName = internalLoggerClassName;
+    }
+
+    public void setPlatform( String platform ) {
+        config.platform = platform;
     }
 
     public static class Config {

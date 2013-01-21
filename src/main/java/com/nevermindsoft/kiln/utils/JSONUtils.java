@@ -31,7 +31,7 @@ public class JSONUtils {
             while (iterator.hasNext()) {
                 Object o = iterator.next();
 
-                json.append("\"").append(escapeJSON(o.toString())).append("\"");
+                json.append(jsonRepresentation(o));
 
                 if (iterator.hasNext()) {
                     json.append(",");
@@ -64,8 +64,7 @@ public class JSONUtils {
             while (iterator.hasNext()) {
                 Map.Entry<String, Object> entry = iterator.next();
 
-                json.append("\"").append(escapeJSON(entry.getKey())).append("\":");
-                json.append("\"").append(escapeJSON(entry.getValue().toString())).append("\"");
+                json.append("\"").append(escapeJSON(entry.getKey())).append("\":").append(jsonRepresentation(entry.getValue()));
 
                 if (iterator.hasNext()) {
                     json.append(",");
@@ -75,6 +74,24 @@ public class JSONUtils {
             json.append("}");
 
             result = json.toString();
+        }
+
+        return result;
+    }
+
+    public static String jsonRepresentation( Object o ) {
+        String result;
+
+        if ( o == null ) {
+            result = "null";
+        } else if ( o instanceof JSONArray || o instanceof JSONObject ) {
+            result = o.toString();
+        } else if ( o instanceof String ) {
+            result = String.format("\"%s\"", escapeJSON((String)o));
+        } else if ( o instanceof Number ) {
+            result = o.toString();
+        } else { //- Catch all
+            result = escapeJSON(o.toString());
         }
 
         return result;
