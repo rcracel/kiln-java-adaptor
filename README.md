@@ -31,7 +31,7 @@ The project information and source code for the Log4J adaptor is currently avail
 
 ```groovy
 dependencies {
-    runtime 'com.nevermindsoft:kiln-adaptor-java:1.8'
+    runtime 'com.nevermindsoft:kiln-adaptor-java:1.10'
     ....
 }
 ```
@@ -48,7 +48,8 @@ log4j = {
                 environmentName: grails.util.Environment.current.getName(),
                 serverUrl:       "http://my.url/api/events/publish",
                 maxRequestItems: 200,
-                sleepTime:       5000
+                sleepTime:       5000,
+                platform:        "grails"
         )
     }
  
@@ -72,6 +73,7 @@ log4j = {
 * **sleepTime** - the time between requests in milliseconds. The appender will keep an internal queue of events and send them out to the server at the given interval.
 * **internalLogger** - the instance of a KilnInternalLogger to be used for internal logging. The default is to use a com.nevermindsoft.kiln.internal.log.KilnConsoleLogger( Level.WARN ). See documentation for more options.
 * **internalLoggerClassName** - the name of the class to be used for internal logging. This is an alternate way to specify the internal logger. Using the *internalLogger* property should be used instead whenever possible.
+* **platform** - the platform name to report to the kiln server. This is used for reporting purposes. If not specified, this will default to 'Java'.
 
 ## Changelog
 
