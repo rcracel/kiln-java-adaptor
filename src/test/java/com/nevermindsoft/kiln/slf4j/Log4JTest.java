@@ -2,11 +2,10 @@ package com.nevermindsoft.kiln.slf4j;
 
 import com.nevermindsoft.kiln.internal.json.Event;
 import com.nevermindsoft.kiln.server.Server;
+import org.apache.log4j.Logger;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
-import org.apache.log4j.Logger;
 
 import java.util.List;
 
@@ -90,6 +89,29 @@ public class Log4JTest {
         if ( events.size() != 30 ) {
             Assert.fail( "Expected 30 events, but got " + events.size() );
         }
+    }
+
+    @Test
+    public void testMaxStackTraceSize() throws Exception {
+        LOG.error("This is an error", new RuntimeException("12345678901234567890"));
+        Thread.sleep( sleepTime );
+
+        List<Event> events = server.getEvents();
+        if ( events.size() != 1 ) {
+            Assert.fail( "Expected 1 event, but got " + events.size() );
+        }
+
+        Event event = events.get( 0 );
+        Assert.assertNotNull( event.getModuleName() );
+        Assert.assertNotNull( event.getLogLevel() );
+        Assert.assertNotNull( event.getMessage() );
+        Assert.assertNotNull( event.getTimestamp() );
+        Assert.assertNotNull( event.getThreadName() );
+        Assert.assertNotNull( event.getEnvironmentName() );
+        Assert.assertNotNull( event.getPlatform() );
+        Assert.assertEquals(  event.getStackTrace(), "java.lang.RuntimeException" );
+        Assert.assertNotNull( event.getSource() );
+        Assert.assertEquals(  event.getMetadata().size(), 2 );
     }
 
     @After

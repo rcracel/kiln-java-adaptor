@@ -94,6 +94,8 @@ log4j = {
 * **internalLogger** - the instance of a KilnInternalLogger to be used for internal logging. The default is to use a com.nevermindsoft.kiln.internal.log.KilnConsoleLogger( Level.WARN ). See documentation for more options.
 * **internalLoggerClassName** - the name of the class to be used for internal logging. This is an alternate way to specify the internal logger. Using the *internalLogger* property should be used instead whenever possible.
 * **platform** - the platform name to report to the kiln server. This is used for reporting purposes. If not specified, this will default to 'Java'.
+* **maxQueueSize** - this is the size of the appender's internal queue. The appender will start rejecting events after a queue reaches this size. The default value for this is 1000.
+* **maxStackTraceSize** - this is the max size of stack traces to avoid sending very large requests to the server. The default value for this is unlimited.
 
 ## Changelog
 

@@ -173,18 +173,23 @@ public class RemoteServiceAppender extends AppenderSkeleton {
         config.maxQueueSize = maxQueueSize;
     }
 
+    public void setMaxStackTraceSize( int maxStackTraceSize ) {
+        config.maxStackTraceSize = maxStackTraceSize;
+    }
+
     public static class Config {
 
         private KilnInternalLogger logger;
 
-        private String moduleName      = "Unknown";
-        private String environmentName = "Unknown";
-        private String apiKey          = "xxx-xxx-xxx";
-        private String serverUrl       = "http://localhost:8080/api/events/publish";
-        private int    maxRequestItems = 200;
-        private int    maxQueueSize    = 1000;
-        private int    sleepTime       = 2000;
-        private String platform = "Java";
+        private String moduleName        = "Unknown";
+        private String environmentName   = "Unknown";
+        private String apiKey            = "xxx-xxx-xxx";
+        private String serverUrl         = "http://localhost:8080/api/events/publish";
+        private int    maxRequestItems   = 200;
+        private int    maxQueueSize      = 1000;
+        private int    maxStackTraceSize = -1;
+        private int    sleepTime         = 2000;
+        private String platform          = "Java";
 
 
         public String getModuleName() {
@@ -217,6 +222,10 @@ public class RemoteServiceAppender extends AppenderSkeleton {
 
         public int getMaxQueueSize() {
             return maxQueueSize;
+        }
+
+        public int getMaxStackTraceSize() {
+            return maxStackTraceSize;
         }
 
         public KilnInternalLogger getLogger() {

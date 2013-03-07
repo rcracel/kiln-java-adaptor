@@ -4,7 +4,10 @@ import com.nevermindsoft.kiln.log4j.RemoteServiceAppender.Config;
 import com.nevermindsoft.kiln.utils.JSONArray;
 import com.nevermindsoft.kiln.utils.JSONObject;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.*;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -12,7 +15,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -103,7 +107,12 @@ public class KilnPublisher {
 
             String stackTrace = StringUtils.join(event.getThrowableStrRep(), "\n");
             if ( StringUtils.isNotBlank( stackTrace ) ) {
-                object.set("stack_trace", stackTrace);
+                int maxStackTraceSize = config.getMaxStackTraceSize();
+                if ( maxStackTraceSize > 0 && maxStackTraceSize < stackTrace.length() ) {
+                    stackTrace = stackTrace.substring( 0, maxStackTraceSize );
+                }
+
+                    object.set("stack_trace", stackTrace);
             }
 
             if ( event.locationInformationExists() ) {
