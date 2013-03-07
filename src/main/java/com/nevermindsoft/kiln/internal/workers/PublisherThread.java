@@ -69,13 +69,12 @@ public class PublisherThread implements Runnable {
                 }
 
                 if ( !localQueue.isEmpty() ) {
-                    config.getLogger().log(Level.WARN, "Processing " + localQueue.size() + " events");
+                    //config.getLogger().log(Level.WARN, "Processing " + localQueue.size() + " events");
                     pushItems( localQueue );
                 } else {
-                    config.getLogger().log(Level.WARN, "Queue is empty");
+                    //config.getLogger().log(Level.WARN, "Queue is empty");
                 }
 
-                config.getLogger().log(Level.DEBUG, "Sleeping for " + config.getSleepTime() + " seconds");
                 if ( localQueue.isEmpty() )
                     Thread.sleep( config.getSleepTime() );
             }

@@ -23,6 +23,7 @@ public class Log4JTest {
     private static Server server;
 
     private static int port = 4444;
+    private static long sleepTime = 2500;
 
     @BeforeClass
     public static void startUp() {
@@ -41,7 +42,7 @@ public class Log4JTest {
     public void testLog() throws Exception {
         LOG.info("test....");
 
-        Thread.sleep( 6000 );
+        Thread.sleep( sleepTime );
 
         List<Event> events = server.getEvents();
         if ( events.size() != 1 ) {
@@ -56,7 +57,7 @@ public class Log4JTest {
         Assert.assertNotNull( event.getThreadName() );
         Assert.assertNotNull( event.getEnvironmentName() );
         Assert.assertNotNull( event.getPlatform() );
-//        Assert.assertNotNull( event.getStackTrace() );
+        Assert.assertNull( event.getStackTrace() );
         Assert.assertNotNull( event.getSource() );
         Assert.assertEquals( event.getMetadata().size(), 2 );
     }
@@ -67,13 +68,28 @@ public class Log4JTest {
             LOG.error( "Entry #" + index );
         }
 
-        Thread.sleep( 10000 );
+        Thread.sleep( sleepTime );
 
         List<Event> events = server.getEvents();
         if ( events.size() != 10 ) {
             Assert.fail( "Expected 10 events, but got " + events.size() );
         }
 
+    }
+
+    @Test
+    public void testBursts() throws Exception {
+        for ( int burst = 0 ; burst < 3 ; burst++ ) {
+            for ( int index = 0 ; index < 20 ; index++ ) {
+                LOG.error( "Entry #" + index );
+            }
+            Thread.sleep( sleepTime );
+        }
+
+        List<Event> events = server.getEvents();
+        if ( events.size() != 30 ) {
+            Assert.fail( "Expected 30 events, but got " + events.size() );
+        }
     }
 
     @After
@@ -85,7 +101,7 @@ public class Log4JTest {
         System.out.println("Stopping server...");
 
         server.stop();
-        Thread.sleep( 1500 );
+        Thread.sleep( sleepTime );
     }
 
 }

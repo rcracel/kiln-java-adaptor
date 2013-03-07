@@ -89,7 +89,6 @@ public class Server implements Runnable {
             ServerSocket ssock = new ServerSocket( port );
 
             while ( !shouldStop ) {
-                System.out.println("Waiting for connections on port " + port);
                 Socket sock = ssock.accept();
                 new Thread( new RequestHandler( sock, requests ) ).start();
             }
