@@ -16,7 +16,7 @@ public class JSONUtils {
     /**
      * Converts a list into a json representation
      *
-     * @param array a list of objects to be converted to json
+     * @param array a list of json to be converted to json
      * @return the json string representing this list
      */
     public static String array2json(List<?> array) {

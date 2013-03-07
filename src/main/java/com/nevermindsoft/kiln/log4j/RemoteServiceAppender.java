@@ -1,4 +1,4 @@
-package com.nevermindsoft.kiln;
+package com.nevermindsoft.kiln.log4j;
 
 import com.nevermindsoft.kiln.internal.log.KilnConsoleInternalLogger;
 import com.nevermindsoft.kiln.internal.log.KilnInternalLogger;
@@ -44,7 +44,6 @@ public class RemoteServiceAppender extends AppenderSkeleton {
                 Class<?> loggerClass = Class.forName( internalLoggerClassName );
                 if ( KilnInternalLogger.class.isAssignableFrom( loggerClass ) ) {
                     internalLogger = (KilnInternalLogger) loggerClass.newInstance();
-                    config.logger = internalLogger;
                 } else {
                     //- We don't yet have a logger to report to, so the only option is to use System.out
                     System.out.println("!!!!!!!!! Could not initialize internal logger with property from internalLoggerClassName, it does not implement KilnInternalLogger !!!!!!!!!");
@@ -60,6 +59,7 @@ public class RemoteServiceAppender extends AppenderSkeleton {
             internalLogger = new KilnConsoleInternalLogger();
         }
 
+        config.logger = internalLogger;
 
         processor = new PublisherThread( config );
 
@@ -133,10 +133,8 @@ public class RemoteServiceAppender extends AppenderSkeleton {
         return false;
     }
 
-
     public void setModuleName(String moduleName) {
         config.moduleName = moduleName;
-
     }
 
     public void setServerUrl(String serverUrl) {

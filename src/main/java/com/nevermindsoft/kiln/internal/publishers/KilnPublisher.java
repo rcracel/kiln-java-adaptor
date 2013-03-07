@@ -1,6 +1,6 @@
 package com.nevermindsoft.kiln.internal.publishers;
 
-import com.nevermindsoft.kiln.RemoteServiceAppender.Config;
+import com.nevermindsoft.kiln.log4j.RemoteServiceAppender.Config;
 import com.nevermindsoft.kiln.utils.JSONArray;
 import com.nevermindsoft.kiln.utils.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -48,11 +48,10 @@ public class KilnPublisher {
      */
     public void pushItems( List<LoggingEvent> events ) {
 
+        HttpClient client = new DefaultHttpClient();
+        HttpPost post = new HttpPost( config.getServerUrl() );
         try {
             StringEntity entity = new StringEntity( buildAjax( events ) );
-
-            HttpClient client = new DefaultHttpClient();
-            HttpPost post = new HttpPost( config.getServerUrl() );
 
             post.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
             post.addHeader(HttpHeaders.ACCEPT, "application/json");
@@ -69,6 +68,8 @@ public class KilnPublisher {
             config.getLogger().log(Level.ERROR, "Failed to compose json request: " + e.getMessage());
         } catch ( IOException e ) {
             config.getLogger().log(Level.ERROR, "Could not connect to the server: " + e.getMessage());
+        } finally {
+            post.releaseConnection();
         }
 
     }

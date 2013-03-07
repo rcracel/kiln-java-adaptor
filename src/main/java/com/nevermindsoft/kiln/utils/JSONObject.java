@@ -47,5 +47,4 @@ public class JSONObject extends HashMap<String, Object> {
         return JSONUtils.map2json( this );
     }
 
-
 }

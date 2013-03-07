@@ -41,7 +41,7 @@ dependencies {
 log4j = {
     appenders {
         ....
-        appender    new com.nevermindsoft.kiln.RemoteServiceAppender(
+        appender    new com.nevermindsoft.kiln.log4j.RemoteServiceAppender(
                 name:            "remote",
                 moduleName:      "My Module Name",
                 apiKey:          "get-key-from-kiln",
@@ -77,6 +77,13 @@ log4j = {
 
 ## Changelog
 
+*1.11
+    * Adding support for SLF4J
+    * Adding unit tests
+    * Improving memory utilization
+        * Adding support to configure queue size
+        * Adding support to configure maximum size for stack trace
+        * Making more efficient use of internal memory utilization
 * 1.10
     * Refactoring appender configuration into its own class
     * Adding support for specifying a platform (Java,Grails,...) with a default value of Java

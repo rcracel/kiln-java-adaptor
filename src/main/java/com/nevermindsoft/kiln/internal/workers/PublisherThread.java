@@ -1,7 +1,7 @@
 package com.nevermindsoft.kiln.internal.workers;
 
 import com.nevermindsoft.kiln.internal.publishers.KilnPublisher;
-import com.nevermindsoft.kiln.RemoteServiceAppender.Config;
+import com.nevermindsoft.kiln.log4j.RemoteServiceAppender.Config;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -19,7 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class PublisherThread implements Runnable {
 
-    private Queue<LoggingEvent> eventQueue = new LinkedBlockingQueue<LoggingEvent>();
+    private Queue<LoggingEvent> eventQueue;
 
     private boolean shouldRun = true;
 
@@ -33,7 +33,8 @@ public class PublisherThread implements Runnable {
      * @param config configuration for the appender
      */
     public PublisherThread( Config config ) {
-        this.config = config;
+        this.config     = config;
+        this.eventQueue = new LinkedBlockingQueue<LoggingEvent>();
     }
 
     /**

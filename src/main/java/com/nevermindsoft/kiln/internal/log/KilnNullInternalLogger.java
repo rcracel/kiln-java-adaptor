@@ -3,11 +3,9 @@ package com.nevermindsoft.kiln.internal.log;
 import org.apache.log4j.Level;
 
 /**
- * Created with IntelliJ IDEA.
  * User: rcracel
  * Date: 1/3/13
  * Time: 9:52 AM
- * To change this template use File | Settings | File Templates.
  */
 public class KilnNullInternalLogger implements KilnInternalLogger {
 
