@@ -9,7 +9,6 @@ import org.junit.runners.JUnit4;
 import org.apache.log4j.Logger;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * User: rcracel
@@ -21,14 +20,21 @@ public class Log4JTest {
 
     private static final Logger LOG = Logger.getLogger( Log4JTest.class );
 
+    private static Server server;
+
+    private static int port = 4444;
+
     @BeforeClass
     public static void startUp() {
-        System.out.println("Start Up");
+        System.out.println("Starting server...");
+
+        server = new Server( port );
+        server.start();
     }
 
     @Before
     public void before() {
-        Server.start();
+        server.clear();
     }
 
     @Test
@@ -37,7 +43,7 @@ public class Log4JTest {
 
         Thread.sleep( 6000 );
 
-        List<Event> events = Server.getEvents();
+        List<Event> events = server.getEvents();
         if ( events.size() != 1 ) {
             Assert.fail( "Expected only one event, but got " + events.size() );
         }
@@ -55,20 +61,31 @@ public class Log4JTest {
         Assert.assertEquals( event.getMetadata().size(), 2 );
     }
 
+    @Test
+    public void testQueueOverflow() throws Exception {
+        for ( int index = 0 ; index < 20 ; index++ ) {
+            LOG.error( "Entry #" + index );
+        }
+
+        Thread.sleep( 10000 );
+
+        List<Event> events = server.getEvents();
+        if ( events.size() != 10 ) {
+            Assert.fail( "Expected 10 events, but got " + events.size() );
+        }
+
+    }
+
     @After
-    public void after() {
-        Server.stop();
-
-        List<Event> events = Server.getEvents();
-
-        System.out.println( events );
+    public void after() throws Exception {
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
-        System.out.println("Tear Down");
+        System.out.println("Stopping server...");
 
-        Thread.sleep( 20000 );
+        server.stop();
+        Thread.sleep( 1500 );
     }
 
 }

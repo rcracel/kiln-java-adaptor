@@ -2,13 +2,11 @@ package com.nevermindsoft.kiln.server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.nevermindsoft.kiln.internal.json.Event;
 import com.nevermindsoft.kiln.internal.json.Request;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -22,20 +20,20 @@ import java.util.List;
  */
 public class Server implements Runnable {
 
-    private static Server INSTANCE = new Server();
+    private Thread SERVER_THREAD;
 
-    private static Thread SERVER_THREAD;
+    private int port;
 
     private boolean shouldStop = false;
 
     private List<String> requests = Collections.synchronizedList( new ArrayList<String>() );
 
-    public static void start() {
+    public void start() {
         SERVER_THREAD.start();
     }
 
-    public static void stop() {
-        INSTANCE.shouldStop = true;
+    public void stop() {
+        shouldStop = true;
 
         int count = 0;
         while ( SERVER_THREAD.isAlive() && count < 5 ) {
@@ -52,16 +50,21 @@ public class Server implements Runnable {
         }
     }
 
-    private Server() {
+    public void clear() {
+        requests.clear();
+    }
+
+    public Server( int port ) {
+        this.port = port;
         SERVER_THREAD = new Thread( this );
     }
 
-    public static List<Event> getEvents() {
+    public List<Event> getEvents() {
         Gson gson = new GsonBuilder().excludeFieldsWithModifiers( Modifier.STATIC ).create();
 
         List<Event> events = new ArrayList<Event>();
 
-        for ( String json : INSTANCE.requests ) {
+        for ( String json : requests ) {
             Request request = gson.fromJson( json, Request.class );
             events.addAll( request.getEvents() );
         }
@@ -83,14 +86,18 @@ public class Server implements Runnable {
     @Override
     public void run() {
         try {
-            ServerSocket ssock = new ServerSocket( 2332 );
+            ServerSocket ssock = new ServerSocket( port );
 
             while ( !shouldStop ) {
+                System.out.println("Waiting for connections on port " + port);
                 Socket sock = ssock.accept();
                 new Thread( new RequestHandler( sock, requests ) ).start();
             }
 
             ssock.close();
+
+            System.out.println("Server stopped");
+
         } catch ( IOException e ) {
             e.printStackTrace();
         }

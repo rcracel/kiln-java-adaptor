@@ -40,46 +40,65 @@ public class RequestHandler implements Runnable {
         System.out.println("Handling request....");
 
         try {
-            InputStream stream = socket.getInputStream();
+            InputStream input = socket.getInputStream();
+            requests.add( readInput( input ) );
 
-            int prev = 0, next = stream.read();
-            Map<String, String> headers = new HashMap<String, String>();
-            StringBuilder buffer = new StringBuilder();
-            while ( next >= 0 ) {
-                while ((next == 10 && prev == 13) || (prev == 10 && next == 13)) {
-                    next = stream.read();
-                }
 
-                if (next == 10 || next == 13) {
-                    if ( buffer.length() == 0 ) {
-                        break;
-                    } else if ( headers.size() == 0 ) {
-                        headers.put( "Method", buffer.toString() );
-                    } else {
-                        String[] tokens = buffer.toString().split("\\s*:\\s*");
-                        headers.put( tokens[0], tokens[1] );
-                    }
-                    buffer = new StringBuilder();
-                } else {
-                    buffer.append( Character.toChars( next ) );
-                }
+            OutputStream output = socket.getOutputStream();
+            writeOutput( output );
 
-                prev = next;
-                next = stream.read();
-            }
-
-            int contentLength = Integer.valueOf( headers.get("Content-Length") );
-            StringBuilder body = new StringBuilder();
-            while ( contentLength-- >= 0 ) {
-                body.append( Character.toChars( stream.read() ) );
-            }
-
-            requests.add( body.toString().trim() );
+            input.close();
+            output.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         System.out.println("Request handled....");
+    }
+
+    private String readInput( InputStream stream ) throws IOException {
+        int prev = 0, next = stream.read();
+        Map<String, String> headers = new HashMap<String, String>();
+        StringBuilder buffer = new StringBuilder();
+        while ( next >= 0 ) {
+            while ((next == 10 && prev == 13) || (prev == 10 && next == 13)) {
+                next = stream.read();
+            }
+
+            if (next == 10 || next == 13) {
+                if ( buffer.length() == 0 ) {
+                    break;
+                } else if ( headers.size() == 0 ) {
+                    headers.put( "Method", buffer.toString() );
+                } else {
+                    String[] tokens = buffer.toString().split("\\s*:\\s*");
+                    headers.put( tokens[0], tokens[1] );
+                }
+                buffer = new StringBuilder();
+            } else {
+                buffer.append( Character.toChars( next ) );
+            }
+
+            prev = next;
+            next = stream.read();
+        }
+
+        int contentLength = Integer.valueOf( headers.get("Content-Length") );
+        StringBuilder body = new StringBuilder();
+        while ( contentLength-- >= 0 ) {
+            body.append( Character.toChars( stream.read() ) );
+        }
+
+        String request = body.toString().trim();
+
+        System.out.println( "Received: " + request );
+
+        return request;
+    }
+
+    private void writeOutput( OutputStream stream ) throws IOException {
+        stream.write(("HTTP/1.1 200 OK\n\nWorkerRunnable: " + Thread.currentThread().getName() + " - " + System.currentTimeMillis() + "").getBytes());
+        stream.flush();
     }
 }

@@ -39,7 +39,8 @@ public class KilnConsoleInternalLogger implements KilnInternalLogger {
      */
     public void log( Level level, String message, Throwable t ) {
         if ( level.isGreaterOrEqual(minLevel) ) {
-            System.out.print( String.format( " -- %s -- %s", level.toString(), message ) );
+            System.out.println( String.format( " -- %s -- %s", level.toString(), message ) );
+            System.out.flush();
 
             if ( t != null ) {
                 t.printStackTrace();

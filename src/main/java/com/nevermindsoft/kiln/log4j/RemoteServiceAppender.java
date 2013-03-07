@@ -94,7 +94,7 @@ public class RemoteServiceAppender extends AppenderSkeleton {
         event.getThrowableStrRep();
 
         if ( !processor.queue( event ) ) {
-            internalLogger.log( Level.ERROR, "Could not queue event");
+            internalLogger.log( Level.ERROR, "Could not queue event ");
         }
     }
 
@@ -169,6 +169,10 @@ public class RemoteServiceAppender extends AppenderSkeleton {
         config.platform = platform;
     }
 
+    public void setMaxQueueSize( int maxQueueSize ) {
+        config.maxQueueSize = maxQueueSize;
+    }
+
     public static class Config {
 
         private KilnInternalLogger logger;
@@ -178,6 +182,7 @@ public class RemoteServiceAppender extends AppenderSkeleton {
         private String apiKey          = "xxx-xxx-xxx";
         private String serverUrl       = "http://localhost:8080/api/events/publish";
         private int    maxRequestItems = 200;
+        private int    maxQueueSize    = 1000;
         private int    sleepTime       = 2000;
         private String platform = "Java";
 
@@ -208,6 +213,10 @@ public class RemoteServiceAppender extends AppenderSkeleton {
 
         public String getPlatform() {
             return platform;
+        }
+
+        public int getMaxQueueSize() {
+            return maxQueueSize;
         }
 
         public KilnInternalLogger getLogger() {

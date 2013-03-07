@@ -1,5 +1,6 @@
 package com.nevermindsoft.kiln.internal.workers;
 
+import com.nevermindsoft.kiln.internal.log.KilnInternalLogger;
 import com.nevermindsoft.kiln.internal.publishers.KilnPublisher;
 import com.nevermindsoft.kiln.log4j.RemoteServiceAppender.Config;
 import org.apache.log4j.Level;
@@ -34,7 +35,7 @@ public class PublisherThread implements Runnable {
      */
     public PublisherThread( Config config ) {
         this.config     = config;
-        this.eventQueue = new LinkedBlockingQueue<LoggingEvent>();
+        this.eventQueue = new LinkedBlockingQueue<LoggingEvent>( config.getMaxQueueSize() );
     }
 
     /**
@@ -54,6 +55,8 @@ public class PublisherThread implements Runnable {
     @Override
     public void run() {
 
+        config.getLogger().log( Level.WARN, "Log Publishing Thread has started..." );
+
         try {
             while ( shouldRun ) {
                 List<LoggingEvent> localQueue = new ArrayList<LoggingEvent>();
@@ -66,11 +69,13 @@ public class PublisherThread implements Runnable {
                 }
 
                 if ( !localQueue.isEmpty() ) {
+                    config.getLogger().log(Level.WARN, "Processing " + localQueue.size() + " events");
                     pushItems( localQueue );
                 } else {
-                    //KilnInternalLogger.log( Level.WARN, "Queue is empty" );
+                    config.getLogger().log(Level.WARN, "Queue is empty");
                 }
 
+                config.getLogger().log(Level.DEBUG, "Sleeping for " + config.getSleepTime() + " seconds");
                 if ( localQueue.isEmpty() )
                     Thread.sleep( config.getSleepTime() );
             }
@@ -80,7 +85,7 @@ public class PublisherThread implements Runnable {
             config.getLogger().log( Level.ERROR, "Unexpected error, halting thread: " + e.getMessage(), e );
         }
 
-        config.getLogger().log( Level.WARN, "Log Published Thread has stopped" );
+        config.getLogger().log( Level.WARN, "Log Publishing Thread has stopped" );
     }
 
     /**
