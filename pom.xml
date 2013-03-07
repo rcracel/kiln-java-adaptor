@@ -7,8 +7,8 @@
     <artifactId>kiln-adaptor-java</artifactId>
     <version>1.11-SNAPSHOT</version>
 
-    <name>KILN Log4j Adaptor</name>
-    <description>Adaptor for the KILN logging service</description>
+    <name>KILN Logging Adaptor</name>
+    <description>Kiln event logging publisher for Log4J and SLF4J</description>
     <url>https://github.com/rcracel/kiln-java-adaptor</url>
 
     <packaging>jar</packaging>
