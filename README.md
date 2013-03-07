@@ -36,7 +36,8 @@ log4j.appender.kiln.serverUrl=http://localhost:4444/api/events/publish
 log4j.appender.kiln.maxRequestItems=200
 log4j.appender.kiln.sleepTime=2000
 log4j.appender.kiln.platform=JUnit
-log4j.appender.kiln.maxQueueSize=10
+log4j.appender.kiln.maxQueueSize=1000
+log4j.appender.kiln.maxStackTraceSize=2000
 
 # Direct log messages to stdout
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
@@ -62,14 +63,16 @@ log4j = {
     appenders {
         ....
         appender    new com.nevermindsoft.kiln.log4j.RemoteServiceAppender(
-                name:            "remote",
-                moduleName:      "My Module Name",
-                apiKey:          "get-key-from-kiln",
-                environmentName: grails.util.Environment.current.getName(),
-                serverUrl:       "http://my.url/api/events/publish",
-                maxRequestItems: 200,
-                sleepTime:       5000,
-                platform:        "grails"
+                name:              "remote",
+                moduleName:        "My Module Name",
+                apiKey:            "get-key-from-kiln",
+                environmentName:   grails.util.Environment.current.getName(),
+                serverUrl:         "http://my.url/api/events/publish",
+                maxRequestItems:   200,
+                sleepTime:         5000,
+                platform:          "grails",
+                maxQueueSize:      1000,
+                maxStackTraceSize: 2000
         )
     }
  
