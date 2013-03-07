@@ -1,6 +1,5 @@
 package com.nevermindsoft.kiln.internal.workers;
 
-import com.nevermindsoft.kiln.internal.log.KilnInternalLogger;
 import com.nevermindsoft.kiln.internal.publishers.KilnPublisher;
 import com.nevermindsoft.kiln.log4j.RemoteServiceAppender.Config;
 import org.apache.log4j.Level;
@@ -58,8 +57,8 @@ public class PublisherThread implements Runnable {
         config.getLogger().log( Level.WARN, "Log Publishing Thread has started..." );
 
         try {
+            List<LoggingEvent> localQueue = new ArrayList<LoggingEvent>();
             while ( shouldRun ) {
-                List<LoggingEvent> localQueue = new ArrayList<LoggingEvent>();
 
                 for ( int index = 0 ; index < config.getMaxRequestItems() ; index++ ) {
                     LoggingEvent event = eventQueue.poll();
@@ -69,14 +68,14 @@ public class PublisherThread implements Runnable {
                 }
 
                 if ( !localQueue.isEmpty() ) {
-                    //config.getLogger().log(Level.WARN, "Processing " + localQueue.size() + " events");
                     pushItems( localQueue );
-                } else {
-                    //config.getLogger().log(Level.WARN, "Queue is empty");
                 }
 
                 if ( localQueue.isEmpty() )
                     Thread.sleep( config.getSleepTime() );
+                else
+                    localQueue.clear();
+
             }
         } catch ( InterruptedException e ) {
             config.getLogger().log(Level.ERROR, "The log published has be halted due to a InterruptedException");
