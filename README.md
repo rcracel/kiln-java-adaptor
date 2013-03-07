@@ -23,7 +23,27 @@ The project information and source code for the Log4J adaptor is currently avail
 
 ## Java
 
-### TODO
+### log4j.properties
+
+```properties
+log4j.rootLogger=INFO, kiln, stdout
+
+log4j.appender.kiln=com.nevermindsoft.kiln.log4j.RemoteServiceAppender
+log4j.appender.kiln.moduleName=Internal Testing
+log4j.appender.kiln.apiKey=TEST-API-KEY
+log4j.appender.kiln.environmentName=Test
+log4j.appender.kiln.serverUrl=http://localhost:4444/api/events/publish
+log4j.appender.kiln.maxRequestItems=200
+log4j.appender.kiln.sleepTime=2000
+log4j.appender.kiln.platform=JUnit
+log4j.appender.kiln.maxQueueSize=10
+
+# Direct log messages to stdout
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.Target=System.out
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
+```
 
 ## Grails
 
