@@ -77,7 +77,7 @@ log4j = {
 
 ## Changelog
 
-*1.11
+* 1.11
     * Adding support for SLF4J
     * Adding unit tests
     * Improving memory utilization
